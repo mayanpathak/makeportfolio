@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Portfolio {
+  id            String         @id @default(uuid())
+  userId        String
+  templateName  String         @default("default")
+  content       Json
+  isPublished   Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  isTemplate    Boolean        @default(false)
+  customCSS     String?
+  fontName      String         @default("Raleway")
+  themeName     String         @default("default")
+  PortfolioLink PortfolioLink?
+}
+
+model Template {
+  id              String   @id @default(uuid())
+  name            String
+  description     String
+  features        String[]
+  defaultContent  Json
+  createdAt       DateTime @default(now())
+  previewImageUrl String[]
+  liveUrl         String  
+}
+
+model PortfolioLink {
+  id          String   @id @default(uuid())
+  portfolioId String   @unique
+  userId      String
+  slug        String?  @unique
+  subdomain   String?  @unique
+  template    Portfolio @relation(fields: [portfolioId], references: [id])
+}
+
+model PremiumUser {
+  id          String   @id @default(uuid())
+  userId      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
